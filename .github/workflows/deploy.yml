@@ -1,0 +1,35 @@
+name: Build and Deploy to Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0
+        with:
+          service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+          project_id: as-rudgus4620
+
+      - name: Configure Docker
+        run: gcloud auth configure-docker
+
+      - name: Build and push to Google Container Registry
+        run: gcloud builds submit --config docker-chair.yml .
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy chair-shop \
+            --image us-central1-docker.pkg.dev/as-rudgus4620/supabase-todo/todos-1128:latest \
+            --platform managed \
+            --region us-central1 \
+            --allow-unauthenticated \
+            --set-env-vars REACT_APP_SUPABASE_URL=${{ secrets.REACT_APP_SUPABASE_URL }},REACT_APP_SUPABASE_ANON_KEY=${{ secrets.REACT_APP_SUPABASE_ANON_KEY }}
+            

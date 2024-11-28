@@ -1,0 +1,6 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '--platform', 'linux/amd64', '-t', 'us-central1-docker.pkg.dev/as-rudgus4620/supabase-todo/todos-1128:latest', '.']
+
+images:
+  - 'us-central1-docker.pkg.dev/as-rudgus4620/supabase-todo/todos-1128:latest'
